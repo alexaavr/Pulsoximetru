@@ -71,15 +71,20 @@ while True:
         display.lcd_display_string("Please place ", 1)
         display.lcd_display_string("your finger", 2)
     else:
-        if(float(read_max30100_spo())< 75):
+        if(int(read_max30100_hr()) > 150):
             display.lcd_clear()
-            display.lcd_display_string("Go to", 1)
+            display.lcd_display_string("Go to ", 1)
             display.lcd_display_string("the doctor", 2)
         else:
-            if(float(read_max30100_spo())> 100):
-                display.lcd_clear
-                display.lcd_display_string("System", 1)
-                display.lcd_display_string("Error", 2)
+            if(float(read_max30100_spo())< 75):
+                display.lcd_clear()
+                display.lcd_display_string("Go to", 1)
+                display.lcd_display_string("the doctor", 2)
             else:
-                display.lcd_display_string("Temp: " + read_temp_c() + "C", 1)
-                display.lcd_display_string("HR/SPO2:" + read_max30100_hr() + "/" + read_max30100_spo() + "% ", 2)
+                if(float(read_max30100_spo())> 100):
+                    display.lcd_clear
+                    display.lcd_display_string("System", 1)
+                    display.lcd_display_string("Error", 2)
+                else:
+                    display.lcd_display_string("Temp: " + read_temp_c() + "C", 1)
+                    display.lcd_display_string("HR/SPO2:" + read_max30100_hr() + "/" + read_max30100_spo() + "% ", 2)
