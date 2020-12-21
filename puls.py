@@ -86,5 +86,10 @@ while True:
                     display.lcd_display_string("System", 1)
                     display.lcd_display_string("Error", 2)
                 else:
-                    display.lcd_display_string("Temp: " + read_temp_c() + "C", 1)
-                    display.lcd_display_string("HR/SPO2:" + read_max30100_hr() + "/" + read_max30100_spo() + "% ", 2)
+                    if(float(read_max30100_spo())< 0):
+                    display.lcd_clear
+                    display.lcd_display_string("System", 1)
+                    display.lcd_display_string("Error", 2)
+                    else:
+                        display.lcd_display_string("Temp: " + read_temp_c() + "C", 1)
+                        display.lcd_display_string("HR/SPO2:" + read_max30100_hr() + "/" + read_max30100_spo() + "% ", 2)
