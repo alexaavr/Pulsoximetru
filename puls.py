@@ -20,14 +20,14 @@ device_file = device_folder + '/w1_slave'
 mx30 = max30100.MAX30100()
 mx30.enable_spo2()
 
-#citire date
+#citire date senzor temperatura
 def read_temp_raw():
     f = open(device_file, 'r')
     lines = f.readlines()
     f.close()
     return lines
 
-#grade celsius
+#grade celsius conversie
 def read_temp_c():
     lines = read_temp_raw()
     while lines[0].strip()[-3:] != 'YES':
@@ -40,21 +40,23 @@ def read_temp_c():
         temp_c = str(round(temp_c, 1))
         return temp_c
 
+
+#detectia pulsului
 def read_max30100_hr():
     mx30.read_sensor()
     mx30.ir
-    hb = int(mx30.ir / 100)
+    hb = int(mx30.ir / 100) #convertire in valoare normala intreaga 
     print(hb)
     if mx30.ir != mx30.buffer_ir :
         return str(hb)
 
+#detectie SPO2
 def read_max30100_spo():
     mx30.read_sensor()
-    #mx30.set_spo_config(100,800)
     mx30.ir, mx30.red
-    print(mx30.ir)
     spo2 = 0
     Z = 0
+    #calcul saturatie
     if mx30.ir != 0 and mx30.red != 0 :
         Z = float((mx30.red/5)/(mx30.ir/5))
         spo2 = 133 - 25*Z 
@@ -66,18 +68,22 @@ def read_max30100_spo():
         return str(round(spo2,1))
 
 while True:
+    #daca pulsul e 0 atunci nu exista un deget pe senzor
     if(int(read_max30100_hr()) == 0):
         display.lcd_display_string("Temp: " + read_temp_c() + " C", 1)
         display.lcd_display_string("Place finger    ", 2)
     else:
+        #daca pulsul este mai mare ca 150 exista o problema de sanatate
         if(int(read_max30100_hr()) > 150):
             display.lcd_display_string("Temp: " + read_temp_c() + " C", 1)
             display.lcd_display_string("Need a doctor   ", 2)
         else:
+            #daca saturatai este mai mica de 75 atunci este o problema de sanatate
             if(float(read_max30100_spo())< 75):
                 display.lcd_display_string("Temp: " + read_temp_c() + " C", 1)
                 display.lcd_display_string("Need a doctor   ", 2)
             else:
+                #daca saturatia este mai mare de 100 exista probleme de citire sau necesita timp de calibrare
                 if(float(read_max30100_spo())> 100):
                     display.lcd_clear()
                     display.lcd_display_string("System", 1)
