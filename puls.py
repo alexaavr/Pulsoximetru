@@ -46,7 +46,6 @@ def read_max30100_hr():
     mx30.read_sensor()
     mx30.ir
     hb = int(mx30.ir / 100) #convertire in valoare normala intreaga 
-    print(hb)
     if mx30.ir != mx30.buffer_ir :
         return str(hb)
 
@@ -58,12 +57,11 @@ def read_max30100_spo():
     Z = 0
     #calcul saturatie
     if mx30.ir != 0 and mx30.red != 0 :
-        Z = float((mx30.red/5)/(mx30.ir/5))
+        Z = float(mx30.red/5)/float(mx30.ir/5)
         spo2 = 133 - 25*Z 
     else: 
         if mx30.ir == 0 and mx30.red == 0:
             spo2 = 0
-    print(spo2)
     if mx30.red != mx30.buffer_red:
         return str(round(spo2,1))
 
@@ -78,21 +76,19 @@ while True:
             display.lcd_display_string("Temp: " + read_temp_c() + " C", 1)
             display.lcd_display_string("Need a doctor   ", 2)
         else:
-            #daca saturatai este mai mica de 75 atunci este o problema de sanatate
-            if(float(read_max30100_spo())< 75):
-                display.lcd_display_string("Temp: " + read_temp_c() + " C", 1)
-                display.lcd_display_string("Need a doctor   ", 2)
+            if(float(read_max30100_spo())< 0):
+                display.lcd_display_string("     System     ", 1)
+                display.lcd_display_string("      Error     ", 2)
             else:
                 #daca saturatia este mai mare de 100 exista probleme de citire sau necesita timp de calibrare
                 if(float(read_max30100_spo())> 100):
-                    display.lcd_clear()
-                    display.lcd_display_string("System", 1)
-                    display.lcd_display_string("Error", 2)
+                    display.lcd_display_string("     System     ", 1)
+                    display.lcd_display_string("      Error     ", 2)
                 else:
-                    if(float(read_max30100_spo())< 0):
-                        display.lcd_clear()
-                        display.lcd_display_string("System", 1)
-                        display.lcd_display_string("Error", 2)
+                    #daca saturatai este mai mica de 75 atunci este o problema de sanatate
+                    if(float(read_max30100_spo())< 75):
+                        display.lcd_display_string("Temp: " + read_temp_c() + " C", 1)
+                        display.lcd_display_string("Need a doctor   ", 2)
                     else:
                         display.lcd_display_string("Temp: " + read_temp_c() + " C", 1)
                         display.lcd_display_string("HR/SPO2:" + read_max30100_hr() + "/" + read_max30100_spo() + "% ", 2)
